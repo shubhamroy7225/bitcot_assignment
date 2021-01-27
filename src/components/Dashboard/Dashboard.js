@@ -1,10 +1,8 @@
 import React from "react";
-import Header from "../Header/Header"
 const DashBoard = (props) => {
   return(
       <div>
-          <Header/>
-           This is DashBoard
+           <h1>This is DashBoard</h1>
       </div>
   )
 };

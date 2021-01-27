@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from "react";
-import Form from "../Form/Form";
+import { useSelector, useDispatch } from "react-redux";
 import Table from "react-bootstrap/Table";
-import "react-responsive-modal/styles.css";
+import { getAllUsers } from "../../redux/apis/Users";
+import { updateUser, deleteUserData } from "../../redux/actions/UserActions";
+import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete";
 import { Modal } from "react-responsive-modal";
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Header from "../Header/Header";
-let UserDataHooks = (props) => {
-  const [userData, getUserData] = useState([]);
-  const [error, setError] = useState("");
+import Form from "../Form/Form";
+import "react-responsive-modal/styles.css";
+const Users = (props) => {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState([]);
+
+  const data = useSelector((state) => state.usersReducer);
+  const dispatch = useDispatch();
+
   const onOpenModal = () => {
     setOpen(true);
     const setUser = (user) => {
@@ -19,36 +23,20 @@ let UserDataHooks = (props) => {
   };
   const onCloseModal = () => setOpen(false);
   useEffect(() => {
-    fetch("https://jsonplaceholder.typicode.com/users")
-      .then((response) => response.json())
-      .then((data) => {
-        getUserData(data);
-      })
-      .catch((err) => {
-        setError("Fetching data failed!");
-      });
+    dispatch(getAllUsers());
   }, []);
-  const updateUser = (formData) => {
-    let elementsIndex = userData.findIndex((item) => item.id === user.id);
-    let newArray = [...userData];
-    newArray[elementsIndex] = formData;
-    getUserData(newArray);
+
+  const updateUserData = (formData) => {
+    dispatch(updateUser(formData));
+  };
+  const deleteUser = (user) => {
+    dispatch(deleteUserData(user.id));
   };
 
-  const deleteUserData = (user) => {
-    let elementsIndex = userData.findIndex((item) => item.id === user.id);
-    let newArray = [...userData];
-    newArray.splice(elementsIndex, 1);
-    getUserData(newArray);
-  };
-
-  if (error !== "") {
-    return <p>ERROR: {error}</p>;
-  }
+  console.log(data);
   return (
     <>
       <div>
-        <Header />
         <Table>
           <thead className="table">
             <tr>
@@ -65,7 +53,7 @@ let UserDataHooks = (props) => {
           </thead>
 
           <tbody>
-            {userData.map((user) => (
+            {data.usersData.map((user) => (
               <tr>
                 <td>{user.id}</td>
                 <td>{user.name}</td>
@@ -75,11 +63,12 @@ let UserDataHooks = (props) => {
                 <td>{user.phone}</td>
                 <td>{user.username}</td>
                 <td>{user.website}</td>
-                <button  onClick={() => onOpenModal(setUser(user))}  >
-                  <EditIcon/>
-                </button>{"   "}
-                <button onClick={() => deleteUserData(user)} variant="danger">
-                  <DeleteIcon/>
+                <button onClick={() => onOpenModal(setUser(user))}>
+                  <EditIcon />
+                </button>
+                {"  "}
+                <button onClick={() => deleteUser(user)} variant="danger">
+                  <DeleteIcon />
                 </button>
               </tr>
             ))}
@@ -90,8 +79,8 @@ let UserDataHooks = (props) => {
           <Form
             key={user.id}
             userData={user}
-            usersData={userData}
-            updateUser={updateUser}
+            usersData={data}
+            update={updateUserData}
             onClose={onCloseModal}
           />
         </Modal>
@@ -99,4 +88,4 @@ let UserDataHooks = (props) => {
     </>
   );
 };
-export default UserDataHooks;
+export default Users;

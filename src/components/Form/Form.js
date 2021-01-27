@@ -12,9 +12,8 @@ function Form(props) {
   };
   const handleSubmit = (evt) => {
     evt.preventDefault();
-    props.updateUser(form);
+    props.update(form);
     props.onClose();
-    alert("user data is added");
   };
   return (
     <div className="container">
