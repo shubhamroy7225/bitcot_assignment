@@ -23,7 +23,7 @@ export default function Login(props) {
       setError("please put the user details");
     } else {
       localStorage.setItem("token", JSON.stringify(form));
-      history.push("/home");
+      history.push("/");
     }
   };
   return (
